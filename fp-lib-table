@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "Footprints") (type "KiCad") (uri "C:/Users/arham/Downloads/KLP-5e-ESP32-sensor-board-main/KLP-5e-ESP32-sensor-board-main/KiCad project/Libraries/Footprints") (options "") (descr ""))
+)
