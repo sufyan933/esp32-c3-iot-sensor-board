@@ -8,7 +8,7 @@ A professional, high-reliability 4-layer IoT edge platform designed end-to-end i
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-![Board 3D render](10-3d-front-isometric.png)
+![Board 3D render](3d-front-isometric.png)
 
 ---
 
@@ -17,6 +17,8 @@ A professional, high-reliability 4-layer IoT edge platform designed end-to-end i
 The **ESP32-C3 IoT Sensor Board** is an ultra-compact, production-grade hardware platform built around the **ESP32-C3-WROOM-02** module. Designed to bridge the gap between benchtop breadboard prototypes and ruggedized field deployments, it integrates multi-domain sensing (atmospheric, acoustic, and luminous), redundant high-speed local storage, and a robust power management front-end onto a tightly constrained 4-layer stack-up.
 
 ### Subsystem Architecture
+
+The board is architected with modular robustness in mind. Rather than relying on generic breakouts, every component is integrated directly onto the PCB, adhering to proper impedance matching, signal decoupling, and low-noise analog routing guidelines.
 
 | Subsystem | Silicon / Component | Technical Specifications & Role |
 | :--- | :--- | :--- |
@@ -34,32 +36,37 @@ The **ESP32-C3 IoT Sensor Board** is an ultra-compact, production-grade hardware
 
 ## Schematic Design
 
-The design is modularly partitioned across 4 distinct hierarchical sheets to optimize signal routing, isolate analog front-ends from high-frequency RF noise, and simplify debugging:
+The electrical schematics are strategically partitioned across four clean, highly readable sheets. This modular organization ensures that power domains, high-frequency digital buses, and sensitive analog signals are isolated systematically.
 
-* **01 — Power & Root Management:** Contains the USB-C power input, the single-cell Li-ion charger circuitry, independent status indicators, and the low-dropout regulator.
-* **02 — Core Processing & Storage:** Houses the ESP32-C3 module, decoupling networks, the high-speed USB-UART interface, the local 32 Mbit NOR flash, and the microSD card slot.
-* **03 — Analog & Digital Sensors:** Implements the digital I2C BME280, the analog phototransistor network, and the MAX4466 microphone pre-amplifier stage.
-* **04 — User Interface & Diagnostics:** Hosts the I2C OLED display breakout, tactile user inputs, general-purpose GPIO expansion headers, and the transistor-based auto-program/reset logic.
+* **Power & Root Management:** Incorporates a robust ESD-protected USB-C interface, the NCP73871 battery charger with charge/standby visual indicators, a dedicated Li-ion JST terminal, and a thermal-regulation-backed LDO stage delivering a clean 3.3V rail.
+* **Core Processing & Storage:** Centers around the ESP32-C3 module, complete with vital decoupling networks, standard strapping resistor configurations, the CP2102N UART bridge, and dual SPI storage options (NOR flash and microSD).
+* **Analog & Digital Sensors:** Interfaces the digital BME280 over an optimized I2C bus alongside the TEMT6000 light-intensity circuit and the high-gain MAX4466 microphone pre-amplifier network.
+* **User Interface & Diagnostics:** Houses a dedicated I2C OLED display breakout, physical user tactile inputs (Boot & Reset), a GPIO expansion rail, and the standard dual-transistor auto-program/reset circuitry.
 
-![Schematic Sheet 1 - Power & Root](01-schematic-power.png)
-![Schematic Sheet 2 - Processing & Storage](02-schematic-esp32-storage.png)
-![Schematic Sheet 3 - Sensors](03-schematic-sensors.png)
-![Schematic Sheet 4 - User Interface & Diagnostics](04-schematic-oled-debug.png)
+![Schematic Sheet 1 - Power & Root](schematic-power.png)
+![Schematic Sheet 2 - Processing & Storage](schematic-esp32-storage.png)
+![Schematic Sheet 3 - Sensors](schematic-sensors.png)
+![Schematic Sheet 4 - User Interface & Diagnostics](schematic-oled-debug.png)
 
 ---
 
-## PCB Stack-Up & Layout
+## PCB Stack-Up & Layout Philosophy
 
-The board is configured as a high-density, controlled-impedance **4-layer PCB**. The stack-up is strategically layered to establish continuous ground references, minimize EMI/RFI radiation, and maximize power delivery performance.
+Designing an RF-enabled IoT board requires strict attention to electromagnetic compatibility (EMC) and signal integrity. A **4-layer PCB stack-up** was selected to achieve a continuous, unbroken reference ground plane directly beneath high-speed signals, mitigating crosstalk and RF return-path issues.
+
+### Layout Highlights
+* **RF Optimization:** The ESP32-C3’s onboard PCB antenna is positioned over a complete copper keep-out zone extending through all four layers of the board edge to maximize wireless transmission efficiency and range.
+* **Signal Isolation:** Sensitive analog trace runs from the MAX4466 microphone amplifier are physically isolated from high-speed digital SPI lines and shielded by localized ground pours to prevent digital switching noise coupling into the audio stream.
+* **Power Distribution Network (PDN):** Star-routing configurations and low-ESR ceramic decoupling capacitors located immediately adjacent to IC power pins ensure a highly stable power delivery network, dampening transient spikes during RF transmission bursts.
 
 <table>
   <tr>
-    <td align="center"><img src="05-front-copper.png" width="100%" alt="Layer 1: Front Copper"/><br/><sub><b>Layer 1 (Signal / RF Path / Local Power)</b></sub></td>
-    <td align="center"><img src="06-inner1-copper.png" width="100%" alt="Layer 2: Inner Ground Plane"/><br/><sub><b>Layer 2 (Solid Ground plane for RF/Signal shielding)</b></sub></td>
+    <td align="center"><img src="front-copper.png" width="100%" alt="Layer 1: Front Copper"/><br/><sub><b>Layer 1: Front Copper (RF, Signals & High-Current Traces)</b></sub></td>
+    <td align="center"><img src="inner1-copper.png" width="100%" alt="Layer 2: Inner Ground Plane"/><br/><sub><b>Layer 2: Inner Ground (Solid Reference Plane)</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="07-inner2-copper.png" width="100%" alt="Layer 3: Inner Power Plane"/><br/><sub><b>Layer 3 (Divided Power plane for 5V / 3.3V rails)</b></sub></td>
-    <td align="center"><img src="08-back-copper.png" width="100%" alt="Layer 4: Back Copper"/><br/><sub><b>Layer 4 (Signal routing)</b></sub></td>
+    <td align="center"><img src="inner2-copper.png" width="100%" alt="Layer 3: Inner Power Plane"/><br/><sub><b>Layer 3: Inner Power (Split VCC_3V3 & VBUS Planes)</b></sub></td>
+    <td align="center"><img src="back-copper.png" width="100%" alt="Layer 4: Back Copper"/><br/><sub><b>Layer 4: Back Copper (Secondary Signal Routing)</b></sub></td>
   </tr>
 </table>
 
@@ -67,16 +74,16 @@ The board is configured as a high-density, controlled-impedance **4-layer PCB**.
 
 ## Mechanical & 3D Verification
 
-A complete 3D model was compiled during the design phase to guarantee strict component-to-component clearances, verify connector pitch tolerances, and ensure seamless fitment within custom hardware enclosures.
+3D modeling was executed concurrently with routing inside KiCad's mechanical viewer. This physical validation ensured precise vertical clearance profiles for all discrete components, verified JST battery plug and USB-C port accessibility, and guaranteed seamless physical integration with custom-designed 3D-printed or injection-molded enclosures.
 
 <table>
   <tr>
-    <td align="center"><img src="09-3d-front-view.png" width="100%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
-    <td align="center"><img src="11-3d-back-view.png" width="100%" alt="3D Back View"/><br/><sub><b>Back Orthographic Assembly</b></sub></td>
+    <td align="center"><img src="3d-front-view.png" width="100%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
+    <td align="center"><img src="3d-back-view.png" width="100%" alt="3D Back View"/><br/><sub><b>Back Orthographic Assembly</b></sub></td>
   </tr>
 </table>
 
-![3D Isometric View](10-3d-front-isometric.png)
+![3D Isometric View](3d-front-isometric.png)
 *Perspective render showcasing mechanical profile heights, component density, and silkscreen alignment.*
 
 ---
@@ -84,6 +91,8 @@ A complete 3D model was compiled during the design phase to guarantee strict com
 ## Pinout and Connector Interfaces
 
 ### J4 — External OLED Header (I2C)
+Provides a direct plug-and-play interface for small-form-factor I2C display panels (e.g., SSD1306) to show local telemetry in real time.
+
 | Pin | Physical Designation | Signal Line | Description |
 | :---: | :---: | :---: | :--- |
 | **1** | GND | Ground | Main system ground reference |
@@ -92,6 +101,8 @@ A complete 3D model was compiled during the design phase to guarantee strict com
 | **4** | 3.3V | VCC_3V3 | Cleaned 3.3V system power rail |
 
 ### J5 — GPIO Expansion Port
+A secondary breakout header designed for system expansion, enabling the integration of external actuator modules, relay controls, or extra sensors.
+
 | Pin | Physical Designation | Signal Line | Description |
 | :---: | :---: | :---: | :--- |
 | **1** | GND | Ground | Main system ground reference |
@@ -101,23 +112,31 @@ A complete 3D model was compiled during the design phase to guarantee strict com
 | **5** | 3.3V | VCC_3V3 | Cleaned 3.3V system power rail |
 
 ### High-Speed SPI Diagnostics Test Points
-For logic analyzer debug and verification of high-speed flash and SD card communication:
+Dedicated copper test pads are located on the PCB surface for logic analyzer debugging of the high-speed shared SPI bus. These permit painless monitoring of communication traffic between the MCU, the flash storage chip, and the microSD card.
 
 | Test Point | Signal | Target Subsystem |
 | :---: | :---: | :---: |
-| **TP1** | MOSI | Master Out Slave In |
-| **TP2** | MISO | Master In Slave Out |
-| **TP3** | SCLK | Serial Clock |
+| **TP1** | MOSI | Master Out Slave In (Shared Bus) |
+| **TP2** | MISO | Master In Slave Out (Shared Bus) |
+| **TP3** | SCLK | Serial Clock (Shared Bus) |
 | **TP4** | CS_SD | Chip Select (microSD Card) |
 | **TP5** | CS_FL | Chip Select (NOR Flash) |
 
 ---
 
-## Key Hardware Features
+## Design and Operational Features
 
-* **Auto-Program Circuitry:** Integrated dual-transistor automatic reset and bootloader sequence (no physical button combination required during code compilation and deployment).
-* **Dual Storage Buses:** Independent Chip Select (`CS`) lanes allow concurrent, conflict-free operations between onboard Flash memory logging and high-capacity MicroSD file systems over a shared SPI bus.
-* **Power Isolation:** Features split ground layouts to prevent analog-to-digital crosstalk, especially around the sensitive microphone op-amp stages.
+* **Auto-Program/Auto-Reset Circuitry:** Dual NPN-transistor auto-flashing logic allows seamless firmware uploads directly from any modern IDE (such as PlatformIO or the Arduino IDE) with a single click. There is no need to perform awkward button presses on the physical unit during flash compile sequences.
+* **Bus Arbitration Resilience:** The SPI storage architecture uses dedicated, decoupled Chip Select lines (`CS_SD` and `CS_FL`) allowing the firmware to securely coordinate and multiplex operations between high-capacity, slow microSD card filesystem writes and fast, structured onboard NOR flash database logs.
+* **Low-Noise Ground Isolation:** Features specialized split ground planes with a single-point bridge connection (star ground topology) to prevent switching transient noise generated by the ESP32-C3 radio from corrupting the highly sensitive analog input signal of the microphone op-amp stage.
+
+---
+
+## Applications
+
+* **Localized Microclimate Monitoring:** Secure logging of humidity, barometric pressure, and temperature variations over long time horizons.
+* **Industrial Noise & Light Level Logging:** Real-time logging of acoustic noise thresholds and lighting conditions for factory floor safety and auditing.
+* **Field Prototyping Platform:** A robust, reliable alternative to unstable breadboard and jumper-wire setups for rapid IoT firmware validation under realistic battery-powered situations.
 
 ---
 
