@@ -136,43 +136,6 @@ The goal of this project was to go beyond a breadboard prototype and design a pr
 
 ---
 
-## Repository Structure
-
-```
-.
-├── hardware/
-│   ├── schematic/          # KiCad schematic (.kicad_sch)
-│   ├── pcb/                 # KiCad PCB layout (.kicad_pcb)
-│   ├── gerbers/              # Fabrication output (Gerber + drill files)
-│   └── bom/                  # Bill of materials (CSV)
-├── firmware/
-│   └── esp32-c3-sensor-node/ # Firmware source for ESP32-C3
-├── docs/
-│   └── datasheets/            # Component datasheets
-├── assets/
-│   └── images/                 # README images (see gallery above)
-└── README.md
-```
-
-## Getting Started
-
-### 1. Hardware
-
-1. Clone this repository.
-2. Open `hardware/pcb/*.kicad_pcb` in **KiCad 10.0.3** (or newer) to view/edit the layout.
-3. Generate Gerbers via **File → Fabrication Outputs → Gerbers** or use the pre-exported files in `hardware/gerbers/`.
-4. Order the board from your preferred fab house (JLCPCB, PCBWay, etc.) — 4-layer, 1.6 mm, HASL or ENIG finish recommended.
-5. Assemble using the BOM in `hardware/bom/`. Reflow or hand-solder SMD components, then solder through-hole connectors (USB-C, JST, headers).
-
-### 2. Firmware
-
-1. Install the [Arduino ESP32 core](https://github.com/espressif/arduino-esp32) or set up ESP-IDF.
-2. Open `firmware/esp32-c3-sensor-node/` in your IDE of choice.
-3. Select **ESP32C3 Dev Module** as the board target.
-4. Connect via USB-C — the onboard auto BOOT/RESET circuit handles flashing without manual button presses.
-5. Upload and open the serial monitor at `115200` baud.
-
----
 
 ## Applications
 
@@ -180,20 +143,6 @@ The goal of this project was to go beyond a breadboard prototype and design a pr
 - Battery-powered data logging systems
 - General-purpose prototyping platform for ESP32-C3 projects
 
-## Roadmap
-
-- [ ] Add enclosure/case design
-- [ ] Publish full BOM with supplier links
-- [ ] Add example firmware for sensor logging to SD card
-- [ ] Power consumption / battery life benchmarking
-
-## Contributing
-
-Issues and pull requests are welcome. If you spot a design improvement or find a routing/footprint issue, please open an issue with details (and a screenshot if it's layout-related).
-
-## License
-
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 
 ## Author
 
