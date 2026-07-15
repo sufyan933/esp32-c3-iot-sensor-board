@@ -5,7 +5,6 @@ A professional, high-reliability 4-layer IoT edge platform designed end-to-end i
 ![KiCad](https://img.shields.io/badge/KiCad-10.0.3-345574?style=flat&logo=kicad&logoColor=white)
 ![MCU](https://img.shields.io/badge/MCU-ESP32--C3--WROOM--02-red)
 ![Layers](https://img.shields.io/badge/PCB-4--Layer-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
 <p align="center">
