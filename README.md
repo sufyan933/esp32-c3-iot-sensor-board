@@ -8,7 +8,7 @@ A professional, high-reliability 4-layer IoT edge platform designed end-to-end i
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-![Board 3D render](3d-front-isometric.png)
+![Board 3D render](<img src="3d-front-isometric.png" width="80%" alt="ESP32-C3 3D Render">)
 
 ---
 
@@ -78,7 +78,7 @@ Designing an RF-enabled IoT board requires strict attention to electromagnetic c
 
 <table>
   <tr>
-    <td align="center"><img src="3d-front-view.png" width="100%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
+    <td align="center"><img src="3d-front-view.png" width="70%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
     <td align="center"><img src="3d-back-view.png" width="100%" alt="3D Back View"/><br/><sub><b>Back Orthographic Assembly</b></sub></td>
   </tr>
 </table>
