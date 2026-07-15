@@ -80,12 +80,14 @@ Designing an RF-enabled IoT board requires strict attention to electromagnetic c
 
 <table>
   <tr>
-    <td align="center"><img src="3d-front-view.png" width="70%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
+    <td align="center"><img src="3d-front-view.png" width="100%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
     <td align="center"><img src="3d-back-view.png" width="100%" alt="3D Back View"/><br/><sub><b>Back Orthographic Assembly</b></sub></td>
   </tr>
 </table>
 
-![3D Isometric View](3d-front-isometric.png)
+<p align="center">
+  <img src="3d-front-isometric.png" width="60%" alt="ESP32-C3 3D Render">
+</p>
 *Perspective render showcasing mechanical profile heights, component density, and silkscreen alignment.*
 
 ---
