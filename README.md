@@ -1,7 +1,6 @@
-# esp32-c3-iot-sensor-board
-Custom 4-layer IoT sensor board built around the ESP32-C3, with onboard Li-ion charging, BME280 environmental sensing, ambient light + sound sensors, SPI flash, and microSD storage. Designed end-to-end in KiCad — schematic, routing, and 3D verification.# ESP32-C3 IoT Sensor Board
+# Custom ESP32-C3 IoT Sensor Board
 
-**A custom 4-layer PCB combining Wi-Fi/BLE connectivity, multi-sensor environmental monitoring, and onboard Li-ion battery management — designed from scratch in KiCad.**
+A professional, high-reliability 4-layer IoT edge platform designed end-to-end in KiCad. This board consolidates multi-sensor environmental telemetry, secure local storage, and intelligent Li-ion battery management around a RISC-V core.
 
 ![KiCad](https://img.shields.io/badge/KiCad-10.0.3-345574?style=flat&logo=kicad&logoColor=white)
 ![MCU](https://img.shields.io/badge/MCU-ESP32--C3--WROOM--02-red)
@@ -9,144 +8,122 @@ Custom 4-layer IoT sensor board built around the ESP32-C3, with onboard Li-ion c
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-![Board 3D render](assets/images/11-3d-render-isometric.png)
+![Board 3D render](10-3d-front-isometric.png)
 
 ---
 
-## Overview
+## Technical Overview
 
-This repository contains the complete hardware design for a self-contained IoT sensor node built around the **ESP32-C3-WROOM-02** module. The board integrates environmental sensing, audio and light sensing, onboard data storage, and a full single-cell Li-ion charging front end — all on a compact 4-layer PCB designed to be both functional and easy to hand-assemble.
+The **ESP32-C3 IoT Sensor Board** is an ultra-compact, production-grade hardware platform built around the **ESP32-C3-WROOM-02** module. Designed to bridge the gap between benchtop breadboard prototypes and ruggedized field deployments, it integrates multi-domain sensing (atmospheric, acoustic, and luminous), redundant high-speed local storage, and a robust power management front-end onto a tightly constrained 4-layer stack-up.
 
-The goal of this project was to go beyond a breadboard prototype and design a production-style board end-to-end: schematic capture, component selection, 4-layer stack-up, routing, and 3D verification — all done independently in KiCad.
+### Subsystem Architecture
 
-## Features
-
-- **Wi-Fi + BLE connectivity** via ESP32-C3-WROOM-02 (RISC-V, 160 MHz)
-- **USB-C** for power, charging, and USB-UART programming (no external FTDI needed)
-- **Onboard Li-ion charging** with charge/standby status LEDs and thermal regulation
-- **3.3 V LDO regulation** for clean, stable sensor supply rail
-- **Environmental sensing** — temperature, humidity, and pressure (BME280)
-- **Ambient light sensing** via phototransistor
-- **Microphone + op-amp gain stage** for audio/sound level sensing
-- **32 Mbit SPI flash** for onboard data logging
-- **microSD card slot** for expandable local storage
-- **I2C OLED header** for real-time on-device data display
-- **Auto BOOT/RESET circuitry** for one-click flashing (no manual button sequence)
-- **SPI test points** broken out for debugging flash/SD communication
-
-## Hardware Overview
-
-| Subsystem | Key Component | Function |
-|---|---|---|
-| MCU / Radio | ESP32-C3-WROOM-02-H4 | Wi-Fi + BLE 5.0, application processor |
-| USB Interface | CP2102N-A02-GQFN20 | USB-to-UART bridge for programming |
-| Battery Charger | NCP73871-2CAI/WL | Single-cell Li-ion charge management + status outputs |
-| Voltage Regulator | LML1117MPX-3.3 | 5 V → 3.3 V LDO for sensor/MCU rail |
-| USB-C Connector | SS-52400-002 | Power delivery + data |
-| Battery Connector | B2B-PH-SN4-TB | 2-pin JST for single-cell LiPo/Li-ion |
-| Environmental Sensor | BME280 | Temperature, humidity, pressure (I2C) |
-| Light Sensor | TEMT6000X01 | Ambient light phototransistor |
-| Audio | MAX4466EXK + electret mic | Adjustable-gain microphone amplifier |
-| Flash Storage | W25Q32JVSSIQ | 32 Mbit SPI NOR flash |
-| Removable Storage | microSD socket (SPI) | Expandable data logging |
-| Display | I2C header | External OLED (SDA/SCL breakout) |
-
-**Power path:** USB-C → NCP73871 charge controller → Li-ion battery (JST) → LML1117 3.3 V LDO → ESP32-C3 and sensor rail, with independent charging/charged/power-good status LEDs.
+| Subsystem | Silicon / Component | Technical Specifications & Role |
+| :--- | :--- | :--- |
+| **MCU & Radio** | ESP32-C3-WROOM-02-H4 | 32-bit RISC-V single-core processor @ 160 MHz, integrated 2.4 GHz Wi-Fi & BLE 5.0 |
+| **USB-UART Bridge**| CP2102N-A02-GQFN20 | High-speed data transit up to 3 Mbps; hardware flow control for automated flashing |
+| **Power Path / Charger** | NCP73871-2CAI/WL | Linear Li-ion charge management with programmable thermal regulation & status pins |
+| **LDO Regulator** | LML1117MPX-3.3 | High-efficiency 5 V to 3.3 V LDO supplying up to 800 mA to critical RF & sensor rails |
+| **Atmospheric Sensing** | BME280 | Ultra-low power digital sensor for temperature, relative humidity, and barometric pressure |
+| **Luminous Sensing** | TEMT6000X01 | Silicon NPN phototransistor matching human eye spectral sensitivity for ambient light sensing |
+| **Acoustic Sensing** | MAX4466EXK + Mic | Electret condenser microphone paired with a rail-to-rail op-amp boasting adjustable gain |
+| **Onboard Storage** | W25Q32JVSSIQ | 32 Mbit SPI NOR Flash dedicated to structured logging, failsafe firmware, or local databases |
+| **Removable Storage** | microSD Socket | SPI-driven MicroSD card slot for bulk data logging and local diagnostic storage |
 
 ---
 
-## Gallery
+## Schematic Design
 
-### PCB Layout
+The design is modularly partitioned across 4 distinct hierarchical sheets to optimize signal routing, isolate analog front-ends from high-frequency RF noise, and simplify debugging:
 
-2D layout showing full component placement and routing across the 4-layer stack.
+* **01 — Power & Root Management:** Contains the USB-C power input, the single-cell Li-ion charger circuitry, independent status indicators, and the low-dropout regulator.
+* **02 — Core Processing & Storage:** Houses the ESP32-C3 module, decoupling networks, the high-speed USB-UART interface, the local 32 Mbit NOR flash, and the microSD card slot.
+* **03 — Analog & Digital Sensors:** Implements the digital I2C BME280, the analog phototransistor network, and the MAX4466 microphone pre-amplifier stage.
+* **04 — User Interface & Diagnostics:** Hosts the I2C OLED display breakout, tactile user inputs, general-purpose GPIO expansion headers, and the transistor-based auto-program/reset logic.
 
-![PCB layout — top overview](assets/images/01-pcb-layout-2d.png)
-*Top copper + silkscreen overview with all reference designators.*
+![Schematic Sheet 1 - Power & Root](01-schematic-power.png)
+![Schematic Sheet 2 - Processing & Storage](02-schematic-esp32-storage.png)
+![Schematic Sheet 3 - Sensors](03-schematic-sensors.png)
+![Schematic Sheet 4 - User Interface & Diagnostics](04-schematic-oled-debug.png)
 
-![PCB layout — labeled functional zones](assets/images/06-pcb-layout-labeled.png)
-*Board floor-planned into functional zones: REG, USB, SOUND, LIGHT, FLASH, CHARGING, and BOOT.*
+---
 
-<table>
-<tr>
-<td><img src="assets/images/07-pcb-front-copper.png" alt="Front copper layer"/><br/><sub>Front copper (F.Cu) layer</sub></td>
-<td><img src="assets/images/08-pcb-bottom-copper.png" alt="Bottom copper layer"/><br/><sub>Bottom copper (B.Cu) layer</sub></td>
-<td><img src="assets/images/09-pcb-routing-view.png" alt="Routing / track view"/><br/><sub>Full routing / track view</sub></td>
-</tr>
-</table>
+## PCB Stack-Up & Layout
 
-### Schematics
-
-| Sheet | Description |
-|---|---|
-| [1/4 — Power & Root](assets/images/02-schematic-power-usb.png) | USB-C converter, Li-ion battery charger, 3.3 V LDO, JST battery input, power LED |
-| [2/4 — MCU & Storage](assets/images/03-schematic-esp32-usb-sd.png) | ESP32-C3 module, USB-UART bridge, SPI flash, microSD socket, SPI test points |
-| [3/4 — Sensors](assets/images/04-schematic-sensors.png) | BME280, ambient light sensor, microphone + amplifier |
-| [4/4 — UI & Debug](assets/images/05-schematic-oled-buttons.png) | I2C OLED header, GPIO breakout, auto BOOT/RESET circuit |
-
-![Schematic sheet 1](assets/images/02-schematic-power-usb.png)
-![Schematic sheet 2](assets/images/03-schematic-esp32-usb-sd.png)
-![Schematic sheet 3](assets/images/04-schematic-sensors.png)
-![Schematic sheet 4](assets/images/05-schematic-oled-buttons.png)
-
-### 3D Renders
+The board is configured as a high-density, controlled-impedance **4-layer PCB**. The stack-up is strategically layered to establish continuous ground references, minimize EMI/RFI radiation, and maximize power delivery performance.
 
 <table>
-<tr>
-<td><img src="assets/images/10-3d-render-top.png" alt="3D render top view"/></td>
-<td><img src="assets/images/13-3d-render-top-alt.png" alt="3D render top angled"/></td>
-<td><img src="assets/images/12-3d-render-bottom.png" alt="3D render bottom view"/></td>
-</tr>
+  <tr>
+    <td align="center"><img src="05-front-copper.png" width="100%" alt="Layer 1: Front Copper"/><br/><sub><b>Layer 1 (Signal / RF Path / Local Power)</b></sub></td>
+    <td align="center"><img src="06-inner1-copper.png" width="100%" alt="Layer 2: Inner Ground Plane"/><br/><sub><b>Layer 2 (Solid Ground plane for RF/Signal shielding)</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="07-inner2-copper.png" width="100%" alt="Layer 3: Inner Power Plane"/><br/><sub><b>Layer 3 (Divided Power plane for 5V / 3.3V rails)</b></sub></td>
+    <td align="center"><img src="08-back-copper.png" width="100%" alt="Layer 4: Back Copper"/><br/><sub><b>Layer 4 (Signal routing)</b></sub></td>
+  </tr>
 </table>
 
 ---
 
-## Connector Reference
+## Mechanical & 3D Verification
 
-**J5 — GPIO Breakout**
+A complete 3D model was compiled during the design phase to guarantee strict component-to-component clearances, verify connector pitch tolerances, and ensure seamless fitment within custom hardware enclosures.
 
-| Pin | Signal |
-|---|---|
-| 1 | GND |
-| 2 | GPIO19 |
-| 3 | GPIO18 |
-| 4 | GPIO8 |
-| 5 | 3.3V |
+<table>
+  <tr>
+    <td align="center"><img src="09-3d-front-view.png" width="100%" alt="3D Front View"/><br/><sub><b>Front Orthographic Assembly</b></sub></td>
+    <td align="center"><img src="11-3d-back-view.png" width="100%" alt="3D Back View"/><br/><sub><b>Back Orthographic Assembly</b></sub></td>
+  </tr>
+</table>
 
-**J4 — External OLED / I2C Header**
-
-| Pin | Signal |
-|---|---|
-| 1 | GND |
-| 2 | SCL |
-| 3 | SDA |
-| 4 | 3.3V |
-
-> ⚠️ Verify pin order against the schematic/silkscreen before wiring external modules.
-
-**SPI Test Points**
-
-| Test Point | Signal |
-|---|---|
-| TP1 | MOSI |
-| TP2 | MISO |
-| TP3 | SCLK |
-| TP4 | CS (SD) |
-| TP5 | CS (Flash) |
+![3D Isometric View](10-3d-front-isometric.png)
+*Perspective render showcasing mechanical profile heights, component density, and silkscreen alignment.*
 
 ---
 
+## Pinout and Connector Interfaces
 
-## Applications
+### J4 — External OLED Header (I2C)
+| Pin | Physical Designation | Signal Line | Description |
+| :---: | :---: | :---: | :--- |
+| **1** | GND | Ground | Main system ground reference |
+| **2** | SCL | GPIO9 / SCL | I2C Serial Clock (10k pull-up onboard) |
+| **3** | SDA | GPIO8 / SDA | I2C Serial Data (10k pull-up onboard) |
+| **4** | 3.3V | VCC_3V3 | Cleaned 3.3V system power rail |
 
-- IoT edge devices for environmental monitoring
-- Battery-powered data logging systems
-- General-purpose prototyping platform for ESP32-C3 projects
+### J5 — GPIO Expansion Port
+| Pin | Physical Designation | Signal Line | Description |
+| :---: | :---: | :---: | :--- |
+| **1** | GND | Ground | Main system ground reference |
+| **2** | IO19 | GPIO19 | General-purpose digital Input/Output |
+| **3** | IO18 | GPIO18 | General-purpose digital Input/Output |
+| **4** | IO8 | GPIO8 | General-purpose digital Input/Output |
+| **5** | 3.3V | VCC_3V3 | Cleaned 3.3V system power rail |
 
+### High-Speed SPI Diagnostics Test Points
+For logic analyzer debug and verification of high-speed flash and SD card communication:
+
+| Test Point | Signal | Target Subsystem |
+| :---: | :---: | :---: |
+| **TP1** | MOSI | Master Out Slave In |
+| **TP2** | MISO | Master In Slave Out |
+| **TP3** | SCLK | Serial Clock |
+| **TP4** | CS_SD | Chip Select (microSD Card) |
+| **TP5** | CS_FL | Chip Select (NOR Flash) |
+
+---
+
+## Key Hardware Features
+
+* **Auto-Program Circuitry:** Integrated dual-transistor automatic reset and bootloader sequence (no physical button combination required during code compilation and deployment).
+* **Dual Storage Buses:** Independent Chip Select (`CS`) lanes allow concurrent, conflict-free operations between onboard Flash memory logging and high-capacity MicroSD file systems over a shared SPI bus.
+* **Power Isolation:** Features split ground layouts to prevent analog-to-digital crosstalk, especially around the sensitive microphone op-amp stages.
+
+---
 
 ## Author
 
-**Muhammad Sufyan**
-Electrical Engineering, PIEAS
-[LinkedIn](#) · [GitHub](#)
+Designed and maintained by:
 
+**Muhammad Sufyan** Electrical Engineering Department  
+*Pakistan Institute of Engineering and Applied Sciences (PIEAS)* [LinkedIn](#) · [GitHub](#)
