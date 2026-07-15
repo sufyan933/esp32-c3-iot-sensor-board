@@ -8,7 +8,9 @@ A professional, high-reliability 4-layer IoT edge platform designed end-to-end i
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-![Board 3D render](<img src="3d-front-isometric.png" width="80%" alt="ESP32-C3 3D Render">)
+<p align="center">
+  <img src="3d-front-isometric.png" width="80%" alt="ESP32-C3 3D Render">
+</p>
 
 ---
 
